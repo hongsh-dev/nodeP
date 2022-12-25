@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const app = express();
 const MongoClient = require("mongodb").MongoClient;
@@ -9,12 +10,12 @@ app.set("view engine", "ejs");
 var db;
 
 MongoClient.connect(
-  "mongodb+srv://shiv:123***@cluster0.dxo6tgm.mongodb.net/?retryWrites=true&w=majority",
+  process.env.DB_URL,
   function (err, client) {
     if (err) return console.log(err);
     db = client.db("todoapp");
 
-    app.listen(443, function () {
+    app.listen(process.env.PORT, function () {
       console.log("listening on 443");
     });
   }
