@@ -21,43 +21,43 @@
   <div class="container">
     <h2 class="my-3 text-center"> lists </h2>
     <ul class="list-group">
-      <div class="container input-group mb-2">
-        <input class="form-control" id="search-input">
-        <button class="input-group-append btn btn-danger" id="search">검색</button>
-      </div>
-      <% for (var i=0 ; i < posts.length ; i ++){ %>
-      <a style="color: inherit; text-decoration: none;" href="/detail/<%= posts[i]._id%>">
-        <li class="list-group-item">
-          <h6 class="my-2 text-muted">
-            <%= posts[i]._id %>
-          </h6>
-          <h4>
-            <%= posts[i].title %>
-          </h4>
-          <p class="my-2 text-muted">due date <%= posts[i].date %>
-          </p>
-      </a>
-      <div class="d-grid gap-2 d-md-block">
-        <button type="button" class="delete btn btn-outline-secondary btn-sm" data-id="<%= posts[i]._id %>">삭제</button>
-        <button type="button" class="fixBtn btn btn-outline-secondary btn-sm" data-id="<%= posts[i]._id %>" onclick="location.href='/edit/<%= posts[i]._id %>'">수정</button>
-      </div>
-      </li>
-
-      <% } %>
-    </ul>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
-  <script>
-    $('#search').click(function(){
-        var searchValue = $('#search-input').val();
-        window.location.replace('/search?value=' + searchValue)
-    });
-
-    $('.delete').click(function(e) {
-      var postId = e.target.dataset.id;
-      var eventThis = $(this);
-      $.ajax({
+        <% for (var i=0 ; i < posts.length ; i ++){ %>
+            <a style="color: inherit; text-decoration: none;" href="/detail/<%= posts[i]._id%>">
+                <li class="list-group-item">
+                    <h6 class="my-2 text-muted">
+                        <%= posts[i]._id %>
+                    </h6>
+                    <h4>
+                        <%= posts[i].title %>
+                    </h4>
+                    <p class="my-2 text-muted">due date <%= posts[i].date %>
+                    </p>
+                </a>
+                <div class="d-grid gap-2 d-md-block">
+                    <button type="button" class="delete btn btn-outline-secondary btn-sm" data-id="<%= posts[i]._id %>">삭제</button>
+                    <button type="button" class="fixBtn btn btn-outline-secondary btn-sm" data-id="<%= posts[i]._id %>" onclick="location.href='/edit/<%= posts[i]._id %>'">수정</button>
+                </div>
+            </li>
+            
+            <% } %>
+        </ul>
+        <div class="container input-group mt-2">
+            <input class="form-control" id="search-input">
+            <button class="input-group-append btn btn-danger ml-2" id="search">검색</button>
+          </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+    <script>
+        $('#search').click(function(){
+            var searchValue = $('#search-input').val();
+            window.location.replace('/search?value=' + searchValue)
+        });
+        
+        $('.delete').click(function(e) {
+            var postId = e.target.dataset.id;
+            var eventThis = $(this);
+            $.ajax({
         method: 'DELETE',
         url: '/delete',
         data: {

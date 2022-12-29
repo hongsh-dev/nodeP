@@ -14,11 +14,23 @@ router.get("/list", function(req, res) {
   });
 });
 
+
+
+/*일반적인 방법
 router.get("/search", (req, res) => {
   req.app.db
     .collection("post")
     .find({ title: req.query.value }).toArray((err, result)=>{
-      console.log(result.title);
+      res.render("search.ejs", { posts: result });
+    });
+});
+*/
+
+/*인덱싱 사용하는 방법*/
+router.get("/search", (req, res) => {
+  req.app.db
+    .collection("post")
+    .find({ $text:{$search : req.query.value} }).toArray((err, result)=>{
       res.render("search.ejs", { posts: result });
     });
 });
