@@ -52,20 +52,20 @@ passport.use(
     },
     function (usernameField, passwordField, done) {
       //console.log(입력한아이디, 입력한비번);
-      db.collection("login").findOne({ id: usernameField }, function (
-        error,
-        result
-      ) {
-        if (error) return done(error);
+      db.collection("login").findOne(
+        { id: usernameField },
+        function (error, result) {
+          if (error) return done(error);
 
-        if (!result)
-          return done(null, false, { message: "존재하지않는 아이디요" });
-        if (passwordField == result.pw) {
-          return done(null, result);
-        } else {
-          return done(null, false, { message: "비번틀렸어요" });
+          if (!result)
+            return done(null, false, { message: "존재하지않는 아이디요" });
+          if (passwordField == result.pw) {
+            return done(null, result);
+          } else {
+            return done(null, false, { message: "비번틀렸어요" });
+          }
         }
-      });
+      );
     }
   )
 );
