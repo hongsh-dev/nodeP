@@ -53,6 +53,15 @@
             var searchValue = $('#search-input').val();
             window.location.replace('/search?value=' + searchValue)
         });
+        /*
+          쉽게 object자료를 query string으로 변환하기
+          var info = {name1 : 'value1', name2 : 'value2'}
+          $param(info)//name1=value1&name2=value2
+
+          폼태그 안에 있는 모든 input을 query string으로 변환
+          input에 name태그가 있어야 함
+          $(폼태그name).serialize()
+        */
         
         $('.delete').click(function(e) {
             var postId = e.target.dataset.id;
