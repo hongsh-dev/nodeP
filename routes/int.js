@@ -98,7 +98,7 @@ router.post("/add", function(req, res) {
 
 router.delete("/delete", function(req, res) {
   req.body._id = parseInt(req.body._id);
-  console.log("삭제된 포스트 아이디 " + req.body._id);
+  console.log("삭제된 아이디 " + req.body._id);
   req.app.db.collection("post").deleteOne(req.body, function(error, result) {
     console.log("삭제완료");
   });
