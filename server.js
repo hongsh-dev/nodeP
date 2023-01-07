@@ -11,6 +11,8 @@ var db;
 
 app.use("/", require("./routes/int.js"));
 app.use("/", require("./routes/chat.js"));
+app.use("/", require("./routes/upload.js"));
+app.use("/", require("./routes/join.js"));
 
 MongoClient.connect(process.env.DB_URL, function(err, client) {
   if (err) return console.log(err);
@@ -33,9 +35,40 @@ app.get("/login", (req, res) => {
   res.render("login.ejs");
 });
 
+app.get("/join", (req, res) => {
+  res.render("join.ejs");
+});
+
+app.post("/addJoin", function(req, res) {
+  req.app.db
+    .collection("counter")
+    .findOne({ name: "NumberOfJoin" }, function(err, result) {
+      var incresedTotalPost = result.generatedJoin + 1;
+      console.log("만들었던 회원수" + " " + incresedTotalPost);
+      req.app.db.collection("login").insertOne({
+        _id: incresedTotalPost,
+        id: req.body.id,
+        pw: req.body.pw
+      }, function(err, result) {
+        console.log("채팅방 저장완료");
+      });
+
+      req.app.db
+        .collection("counter")
+        .updateOne(
+          { name: "NumberOfJoin" },
+          { $set: { generatedJoin: incresedTotalPost } },
+          function(err, result) {
+            if (err) return console.log(err);
+          }
+        );
+    });
+  res.write('<script>window.location="/list"</script>');
+});
+
 app.post(
   "/login",
-  passport.authenticate("local", { failureRedirect: "/fail" }),
+  passport.authenticate("local", { failureRedirect: "/" }),
   (req, res) => {
     res.redirect("/list");
   }
@@ -75,31 +108,4 @@ passport.deserializeUser(function(아이디, done) {
   done(null, {});
 });
 
-let multer = require("multer");
-var path = require("path");
-var storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./public/image");
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname + Date.now());
-  }
-});
-var upload = multer({
-  storage: storage,
-  fileFilter: (req, file, cb) => {
-    let ext = path.extname(file.originalname);
-    if (ext !== ".png" && ext !== ".jpg" && ext !== ".jpeg") {
-      return cb(new Error("피엔지 제피지 온리 맨"));
-    }
-    cb(null, true);
-  },
-  limits: {
-    fileSize: 1024 * 1024
-  }
-});
 
-app.post("/upload", upload.single("profile"), (req, res) => {
-  res.write("<script>alert('success')</script>");
-  res.write('<script>window.location="/list"</script>');
-});

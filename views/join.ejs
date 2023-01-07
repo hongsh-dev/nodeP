@@ -20,17 +20,36 @@
     <%- include('nav.ejs') %>
 
         <div class="container mt-3">
-            <h2 class="my-3 text-center">ChattingBang?</h2>
-            <form action="/addChatName" method="POST">
+            <h2 class="my-3 text-center"> join </h2>
+            <form action="/addJoin" method="POST">
                 <div class="form-group">
-                    <label>name</label>
+                    <label>id</label>
                     <input type="text" class="form-control" name="id">
-                    <label>Say Hi</label>
-                    <input type="text" class="form-control" name="pw">
                 </div>
-                <button type="submit" class="btn btn-danger">add</button>
+                <div class="form-group">
+                    <label>nickname</label>
+                    <input type="text" class="form-control" name="nn">
+                </div>
+                <div class="form-group">
+                    <label>password</label>
+                    <input type="password" class="form-control" name="pw">
+                </div>
+                <div class="form-group">
+                    <label>password check</label>
+                    <input type="password" class="form-control" name="pwck">
+                </div>
+                <button type="submit" id="joinBtn" class="btn btn-danger">join</button>
             </form>
         </div>
+
+        <script>
+
+            $('#joinBtn').click(function (e) {
+                if ('input[name=pw]' !== 'input[name=pwck]') {
+
+                };
+            });
+        </script>
 
 
         <!-- Optional JavaScript; choose one of the two! -->

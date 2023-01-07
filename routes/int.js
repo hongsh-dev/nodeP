@@ -134,4 +134,9 @@ router.put("/edit", (req, res) => {
     );
 });
 
+router.get("/join", (req, res) => {
+  res.render("join.ejs");
+});
+
+
 module.exports = router;

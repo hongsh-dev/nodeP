@@ -21,8 +21,8 @@ router.get("/addChat", function(req, res) {
 
 router.post("/addChatName", function(req, res) {
   req.app.db
-    .collection("chattingbangCounter")
-    .findOne({ name: "numberOfBang" }, function(err, result) {
+    .collection("counter")
+    .findOne({ name: "NumberOfBang" }, function(err, result) {
       var incresedTotalPost = result.generatedBang + 1;
       console.log("만들었던 채팅방 갯수" + " " + incresedTotalPost);
       req.app.db.collection("chattingbang").insertOne({
@@ -34,9 +34,9 @@ router.post("/addChatName", function(req, res) {
       });
 
       req.app.db
-        .collection("chattingbangCounter")
+        .collection("counter")
         .updateOne(
-          { name: "numberOfBang" },
+          { name: "NumberOfBang" },
           { $set: { generatedBang: incresedTotalPost } },
           function(err, result) {
             if (err) return console.log(err);
