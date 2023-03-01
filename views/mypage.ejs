@@ -24,30 +24,16 @@
     <%- include('nav.ejs') %>
 
     <div class="container">
-      <h2 class="my-3 text-center">today todo</h2>
-      <div class="card" style="width: 100%;">
-        <div class="card-body">
-          <h6 class="card-subtitle mb-2 text-muted">
-            <%= data._id%>
-          </h6>
-          <h6 class="card-subtitle mb-2 text-muted">
-            due date <%= data.date%>
-          </h6>
-          <h5 class="card-title mt-4">
-            <%= data.title%>
-          </h5>
-
-          <p class="card-text mt-4">
-            Some quick example text to build on the card title and make up the
-            bulk of the card's content.
-          </p>
-          <a href="/edit/<%= data._id%>" class="card-link">수정하기</a>
-        </div>
-      </div>
+      <h2 class="my-3 text-center">마이 페이지입니다.</h2>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
-    <script></script>
+    <script>
+      $("#search").click(function () {
+        var searchValue = $("#search-input").val();
+        window.location.replace("/search?value=" + searchValue);
+      });
+    </script>
 
     <!-- Optional JavaScript; choose one of the two! -->
     <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->

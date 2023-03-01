@@ -31,7 +31,7 @@
             <button class="btn btn-outline-secondary btn-sm mb-2 " id="clickedDel">del</button>
           </div>
           <% for (var i=0 ; i < chattingbang.length ; i ++){ %>
-            <a style="color: inherit; text-decoration: none ;">
+            <a style="color: inherit; text-decoration: none ;" href="/detailChat/<%= chattingbang[i]._id%>">
               <li class="list-group-item list-group-item-action mb-1">
                 <h6>
                   <%= chattingbang[i].name%>

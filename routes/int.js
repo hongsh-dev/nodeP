@@ -1,17 +1,20 @@
 var router = require("express").Router();
 
-router.get("/", function(req, res) {
+router.get("/", function (req, res) {
   res.redirect("list");
 });
 
-router.get("/write", function(req, res) {
+router.get("/write", function (req, res) {
   res.render("write.ejs");
 });
 
-router.get("/list", function(req, res) {
-  req.app.db.collection("post").find().toArray(function(err, result) {
-    res.render("list.ejs", { posts: result });
-  });
+router.get("/list", function (req, res) {
+  req.app.db
+    .collection("post")
+    .find()
+    .toArray(function (err, result) {
+      res.render("list.ejs", { posts: result });
+    });
 });
 
 /*일반적인 방법
@@ -48,23 +51,26 @@ router.get("/search", (req, res) => {
         index: "titleIndex",
         text: {
           query: req.query.value,
-          path: "title" //제목날짜 둘 다 찾고 싶으면 ['title', 'date']
-        }
-      }
-    }
+          path: "title", //제목날짜 둘 다 찾고 싶으면 ['title', 'date']
+        },
+      },
+    },
   ];
   console.log(req.query);
-  req.app.db.collection("post").aggregate(searchReq).toArray((err, result) => {
-    console.log(result);
-    res.render("search.ejs", { posts: result });
-  });
+  req.app.db
+    .collection("post")
+    .aggregate(searchReq)
+    .toArray((err, result) => {
+      console.log(result);
+      res.render("search.ejs", { posts: result });
+    });
 });
 
 router.get("/upload", (req, res) => {
   res.render("upload.ejs");
 });
 
-router.post("/add", function(req, res) {
+router.post("/add", function (req, res) {
   if (req.body.title == "") {
     console.log("타이틀 안적음");
     res.send("<script>alert('타이틀 적어'); history.back();</script>");
@@ -72,23 +78,26 @@ router.post("/add", function(req, res) {
   }
   req.app.db
     .collection("counter")
-    .findOne({ name: "NumberOfPost" }, function(err, result) {
+    .findOne({ name: "NumberOfPost" }, function (err, result) {
       var incresedTotalPost = result.generatedPost + 1;
       console.log("발행됐던 갯수" + " " + incresedTotalPost);
-      req.app.db.collection("post").insertOne({
-        _id: incresedTotalPost,
-        title: req.body.title,
-        date: req.body.date
-      }, function(err, result) {
-        console.log("저장완료");
-      });
+      req.app.db.collection("post").insertOne(
+        {
+          _id: incresedTotalPost,
+          title: req.body.title,
+          date: req.body.date,
+        },
+        function (err, result) {
+          console.log("저장완료");
+        }
+      );
 
       req.app.db
         .collection("counter")
         .updateOne(
           { name: "NumberOfPost" },
           { $set: { generatedPost: incresedTotalPost } },
-          function(err, result) {
+          function (err, result) {
             if (err) return console.log(err);
           }
         );
@@ -96,10 +105,10 @@ router.post("/add", function(req, res) {
   res.send("<script>alert('성공'); history.back();</script>");
 });
 
-router.delete("/delete", function(req, res) {
+router.delete("/delete", function (req, res) {
   req.body._id = parseInt(req.body._id);
   console.log("삭제된 아이디 " + req.body._id);
-  req.app.db.collection("post").deleteOne(req.body, function(error, result) {
+  req.app.db.collection("post").deleteOne(req.body, function (error, result) {
     console.log("삭제완료");
   });
   res.status(200).send();
@@ -138,5 +147,18 @@ router.get("/join", (req, res) => {
   res.render("join.ejs");
 });
 
+//YouLogined는 미들웨어라고 한다
+router.get("/mypage", YouLogined, (req, res) => {
+  res.render("mypage.ejs");
+});
+
+//미들웨어
+function YouLogined(req, res, next) {
+  if (req.user) {
+    next(); //유저가 맞는지 확인하고 통과
+  } else {
+    res.send("로그인 안하셨는데요?");
+  }
+}
 
 module.exports = router;
