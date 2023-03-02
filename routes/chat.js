@@ -1,20 +1,29 @@
 var router = require("express").Router();
 
-router.get("/chat", function (req, res) {
+function youLogined(req, res, next) {
+  //로그인하고 세션이 있으면 req.user 역시 항상 있다
+  if (req.user) {
+    next(); //유저가 맞는지 확인하고 통과
+  } else {
+    res.send("로그인 안하셨는데요?asdasd");
+  }
+}
+
+router.get("/chat", youLogined, function (req, res) {
   req.app.db
     .collection("chattingbang")
-    .find()
+    .find({ master_id: req.user._id })
     .toArray(function (err, result) {
       res.render("chat.ejs", { chattingbang: result });
     });
 });
 
 router.get("/detailChat/:chatId", (req, res) => {
-  console.log("detailChat");
   req.app.db
     .collection("chattingbang")
     .findOne({ _id: parseInt(req.params.chatId) }, (error, result) => {
       res.render("detailChat.ejs", { data: result });
+      console.log("채팅방 " + result.name);
     });
 });
 
@@ -32,6 +41,8 @@ router.post("/addChatName", function (req, res) {
       req.app.db.collection("chattingbang").insertOne(
         {
           _id: incresedTotalPost,
+          master_id: req.user._id,
+          master: req.user.id,
           name: req.body.name1,
           lastChat: req.body.hi,
         },

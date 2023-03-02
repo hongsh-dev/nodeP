@@ -1,26 +1,23 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const MongoClient = require("mongodb").MongoClient;
 const methodOverride = require("method-override");
+
 app.use(express.urlencoded({ extended: true }));
 app.use("/public", express.static("public"));
 app.use(methodOverride("_method"));
 app.set("view engine", "ejs");
+
+app.listen(process.env.PORT, function () {
+  console.log("listening on 443");
+});
+
+const MongoClient = require("mongodb").MongoClient;
 var db;
-
-app.use("/", require("./routes/int.js"));
-app.use("/", require("./routes/chat.js"));
-app.use("/", require("./routes/upload.js"));
-app.use("/", require("./routes/join.js"));
-
 MongoClient.connect(process.env.DB_URL, function (err, client) {
   if (err) return console.log(err);
   db = client.db("todoapp");
   app.db = db;
-  app.listen(process.env.PORT, function () {
-    console.log("listening on 443");
-  });
 });
 
 const passport = require("passport");
@@ -60,7 +57,7 @@ passport.use(
         //done(서버에러(db에러), 성공시 사용자 db데이터, 에러메세지)
         if (passwordField == result.pw) {
           //암호화를 해서 비교를 해야하는데 그러지 않음
-          return done(null, result);
+          return done(null, result); //result는 req.user가 되고 user가 된다
         } else {
           return done(null, false, { message: "비번틀렸어요" });
         }
@@ -68,20 +65,6 @@ passport.use(
     }
   )
 );
-
-//세션을 저장시키는 코드, 로그인 성공시 발동
-//비밀번호 검증을 하고 난 뒤에 result가 user로 매핑이 된다
-//아이디를 이용해서 세션을 쿠키에 저장시킨다
-
-passport.serializeUser(function (user, done) {
-  console.log(user.id + " 세션이 만들어짐");
-  done(null, user.id);
-});
-
-//세션 데이터를 가진 사람을 DB에서 찾을 때 사용
-passport.deserializeUser(function (아이디, done) {
-  done(null, {});
-});
 
 function youLogined(req, res, next) {
   //로그인하고 세션이 있으면 req.user 역시 항상 있다
@@ -108,9 +91,31 @@ app.post(
   }
 );
 
-//youLogined는 미들웨어라고 한다
-app.get("/mypages", youLogined, (req, res) => {
-  //이렇게 출력해봤자 아무것도 안나온다, deserializeUser 이용해야 한다
-  console.log(req.user);
-  res.render("mypage.ejs");
+//세션을 저장시키는 코드, 로그인 성공시 발동
+//비밀번호 검증을 하고 난 뒤에 result가 user로 매핑이 된다
+//아이디를 이용해서 세션을 쿠키에 저장시킨다
+//서버를 껐다가 키면 세션이 사라진다
+//user는 done(null,result);에서 result다
+passport.serializeUser(function (user, done) {
+  console.log(user.id + " 세션이 만들어짐");
+  done(null, user.id); //디시리얼라이즈드의 d_id로 이어진다
 });
+
+//세션 데이터를 가진 사람을 DB에서 찾을 때 사용
+passport.deserializeUser(function (d_id, done) {
+  db.collection("login").findOne({ id: d_id }, (error, result) => {
+    done(null, result); //요청과 응답 사이에서 정보를 가지고 있음
+  });
+});
+
+//youLogined는 미들웨어라고 한다
+//req.user를 출력하려면 deserializedUser를 이용해야 한다
+app.get("/mypages", youLogined, (req, res) => {
+  console.log("마이페이지" + req.user);
+  res.render("mypage.ejs", { user: req.user });
+});
+
+app.use("/", require("./routes/int.js"));
+app.use("/", require("./routes/chat.js"));
+app.use("/", require("./routes/upload.js"));
+app.use("/", require("./routes/join.js"));
